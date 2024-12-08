@@ -6,12 +6,16 @@ import (
 	"github.com/prnndk/final-project-golang-pbkk/entity"
 )
 
-const ()
+const (
+	MESSAGE_FAILED_GET_USER_TICKET  = "failed get user ticket"
+	MESSAGE_SUCCESS_GET_USER_TICKET = "success get user ticket"
+)
 
 var (
 	ErrUserTicketAlreadyExists = errors.New("user already have ticket for this event")
 	ErrEventCannotBeFound      = errors.New("event cannot be found")
 	ErrBuyTicket               = errors.New("failed to buy ticket")
+	ErrGetUserTicket           = errors.New("failed to get user ticket")
 )
 
 type (
@@ -51,19 +55,4 @@ type (
 		PhoneNumber string `json:"phone_number"`
 		Email       string `json:"email"`
 	}
-
-	// UserLoginRequest struct {
-	// 	Email    string `json:"email" form:"email" binding:"required"`
-	// 	Password string `json:"password" form:"password" binding:"required"`
-	// }
-
-	// UserLoginResponse struct {
-	// 	Token string `json:"token"`
-	// 	Role  string `json:"role"`
-	// }
-
-	// UpdateStatusIsVerifiedRequest struct {
-	// 	UserId     string `json:"user_id" form:"user_id" binding:"required"`
-	// 	IsVerified bool   `json:"is_verified" form:"is_verified"`
-	// }
 )

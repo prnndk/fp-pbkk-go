@@ -5,6 +5,7 @@ import (
 
 	"github.com/prnndk/final-project-golang-pbkk/dto"
 	"github.com/prnndk/final-project-golang-pbkk/entity"
+	"github.com/prnndk/final-project-golang-pbkk/helpers"
 	"github.com/prnndk/final-project-golang-pbkk/repository"
 )
 
@@ -16,7 +17,8 @@ type (
 		GetUserByEmail(ctx context.Context, email string) (dto.UserResponse, error)
 		Update(ctx context.Context, req dto.UserUpdateRequest, userId string) (dto.UserUpdateResponse, error)
 		Delete(ctx context.Context, userId string) error
-		}
+		VerifyUserLogin(ctx context.Context, req dto.UserLoginRequest) (dto.UserLoginResponse, error)
+	}
 
 	userService struct {
 		userRepo   repository.UserRepository
@@ -44,9 +46,11 @@ func (s *userService) Register(ctx context.Context, req dto.UserCreateRequest) (
 	}
 
 	user := entity.User{
-		Name:     req.Name,
-		Email:    req.Email,
-		Password: req.Password,
+		Name:        req.Name,
+		Email:       req.Email,
+		PhoneNumber: req.PhoneNumber,
+		Role:        "user",
+		Password:    req.Password,
 	}
 
 	userReg, err := s.userRepo.RegisterUser(ctx, nil, user)
@@ -55,9 +59,30 @@ func (s *userService) Register(ctx context.Context, req dto.UserCreateRequest) (
 	}
 
 	return dto.UserResponse{
-		ID:    userReg.ID.String(),
-		Name:  userReg.Name,
-		Email: userReg.Email,
+		ID:          userReg.ID.String(),
+		Name:        userReg.Name,
+		Email:       userReg.Email,
+		PhoneNumber: userReg.PhoneNumber,
+		Role:        userReg.Role,
+	}, nil
+}
+
+func (s *userService) VerifyUserLogin(ctx context.Context, req dto.UserLoginRequest) (dto.UserLoginResponse, error) {
+	check, flag, err := s.userRepo.CheckEmail(ctx, nil, req.Email)
+	if err != nil || !flag {
+		return dto.UserLoginResponse{}, dto.ErrEmailNotFound
+	}
+
+	checkPassword, err := helpers.CheckPassword(check.Password, []byte(req.Password))
+	if err != nil || !checkPassword {
+		return dto.UserLoginResponse{}, dto.ErrPasswordNotMatch
+	}
+
+	token := s.jwtService.GenerateToken(check.ID.String(), check.Role)
+
+	return dto.UserLoginResponse{
+		Role:  check.Role,
+		Token: token,
 	}, nil
 }
 

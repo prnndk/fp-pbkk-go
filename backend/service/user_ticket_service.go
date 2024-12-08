@@ -56,3 +56,23 @@ func (s *userTicketService) UserBuyTicket(ctx context.Context, req dto.UserTicke
 		TotalPrice: buyTicket.TotalPrice,
 	}, nil
 }
+
+func (s *userTicketService) GetUserTicket(ctx context.Context, user_id string) ([]dto.UserTicketResponse, error) {
+	userTickets, err := s.userTicketRepo.GetUserTicketByUserId(ctx, nil, user_id)
+	if err != nil {
+		return []dto.UserTicketResponse{}, dto.ErrGetUserTicket
+	}
+
+	var userTicketResponse []dto.UserTicketResponse
+	for _, userTicket := range userTickets {
+		userTicketResponse = append(userTicketResponse, dto.UserTicketResponse{
+			ID:         userTicket.ID.String(),
+			UserID:     userTicket.UserId,
+			EventID:    userTicket.EventId,
+			Quantity:   userTicket.Quantity,
+			TotalPrice: userTicket.TotalPrice,
+		})
+	}
+
+	return userTicketResponse, nil
+}

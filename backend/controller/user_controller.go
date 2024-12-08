@@ -96,15 +96,15 @@ func (c *userController) Login(ctx *gin.Context) {
 		return
 	}
 
-	// result, err := c.userService.Verify(ctx.Request.Context(), req)
-	// if err != nil {
-	// 	res := utils.BuildResponseFailed(dto.MESSAGE_FAILED_LOGIN, err.Error(), nil)
-	// 	ctx.JSON(http.StatusBadRequest, res)
-	// 	return
-	// }
+	result, err := c.userService.VerifyUserLogin(ctx.Request.Context(), req)
+	if err != nil {
+		res := utils.BuildResponseFailed(dto.MESSAGE_FAILED_LOGIN, err.Error(), nil)
+		ctx.JSON(http.StatusBadRequest, res)
+		return
+	}
 
-	// res := utils.BuildResponseSuccess(dto.MESSAGE_SUCCESS_LOGIN, result)
-	// ctx.JSON(http.StatusOK, res)
+	res := utils.BuildResponseSuccess(dto.MESSAGE_SUCCESS_LOGIN, result)
+	ctx.JSON(http.StatusOK, res)
 }
 
 func (c *userController) Update(ctx *gin.Context) {
