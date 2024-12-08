@@ -12,6 +12,7 @@ type (
 		UserBuyEvent(ctx context.Context, tx *gorm.DB, userTicket entity.UserTicket) (entity.UserTicket, error)
 		GetUserTicketByUserId(ctx context.Context, tx *gorm.DB, userId string) ([]entity.UserTicket, error)
 		CheckUserTicket(ctx context.Context, tx *gorm.DB, userId string, eventId string) (entity.UserTicket, bool, error)
+		CheckUserTicketById(ctx context.Context, tx *gorm.DB, userTicketId string) (entity.UserTicket, bool, error)
 	}
 	eventTicketRepository struct {
 		db *gorm.DB
@@ -56,6 +57,19 @@ func (r *eventTicketRepository) CheckUserTicket(ctx context.Context, tx *gorm.DB
 
 	var userTicket entity.UserTicket
 	if err := tx.WithContext(ctx).Where("user_id = ? AND event_id = ?", userId, eventId).First(&userTicket).Error; err != nil {
+		return entity.UserTicket{}, false, err
+	}
+
+	return userTicket, true, nil
+}
+
+func (r *eventTicketRepository) CheckUserTicketById(ctx context.Context, tx *gorm.DB, userTicketId string) (entity.UserTicket, bool, error) {
+	if tx == nil {
+		tx = r.db
+	}
+
+	var userTicket entity.UserTicket
+	if err := tx.WithContext(ctx).Where("id = ?", userTicketId).First(&userTicket).Error; err != nil {
 		return entity.UserTicket{}, false, err
 	}
 

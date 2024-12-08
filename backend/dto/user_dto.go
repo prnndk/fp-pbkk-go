@@ -19,7 +19,7 @@ const (
 	MESSAGE_FAILED_WRONG_EMAIL_OR_PASSWORD = "wrong email or password"
 	MESSAGE_FAILED_UPDATE_USER             = "failed update user"
 	MESSAGE_FAILED_DELETE_USER             = "failed delete user"
-	MESSAGE_FAILED_PROSES_REQUEST          = "failed proses request"
+	MESSAGE_FAILED_PROSES_REQUEST          = "failed processing request"
 	MESSAGE_FAILED_DENIED_ACCESS           = "denied access"
 	MESSAGE_FAILED_VERIFY_EMAIL            = "failed verify email"
 

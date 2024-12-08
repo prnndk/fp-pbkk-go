@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"time"
 
 	"github.com/prnndk/final-project-golang-pbkk/dto"
 	"github.com/prnndk/final-project-golang-pbkk/entity"
@@ -11,6 +12,7 @@ import (
 type (
 	UserTicketService interface {
 		UserBuyTicket(ctx context.Context, req dto.UserTicketCreateRequest, userId string) (dto.UserTicketResponse, error)
+		GetUserTicket(ctx context.Context, user_id string) ([]dto.UserTicketResponse, error)
 	}
 
 	userTicketService struct {
@@ -19,21 +21,40 @@ type (
 	}
 )
 
-func NewUserTicketService(userTicketRepo repository.EventTicketRepository) UserTicketService {
+func NewUserTicketService(userTicketRepo repository.EventTicketRepository, eventRepo repository.EventRepository) UserTicketService {
 	return &userTicketService{
 		userTicketRepo: userTicketRepo,
+		eventRepo:      eventRepo,
 	}
 }
 
 func (s *userTicketService) UserBuyTicket(ctx context.Context, req dto.UserTicketCreateRequest, userId string) (dto.UserTicketResponse, error) {
-	_, flag, _ := s.userTicketRepo.CheckUserTicket(ctx, nil, userId, req.EventID)
+
+	tx := s.eventRepo.BeginTransaction()
+
+	defer tx.Rollback()
+
+	event, flag_event, _ := s.eventRepo.CheckIfEventExist(ctx, tx, req.EventID)
+	if !flag_event {
+		return dto.UserTicketResponse{}, dto.ErrEventCannotBeFound
+	}
+
+	_, flag, _ := s.userTicketRepo.CheckUserTicket(ctx, tx, userId, req.EventID)
 	if flag {
 		return dto.UserTicketResponse{}, dto.ErrUserTicketAlreadyExists
 	}
 
-	_, flag, _ = s.eventRepo.CheckIfEventExist(ctx, nil, req.EventID)
-	if !flag {
-		return dto.UserTicketResponse{}, dto.ErrEventCannotBeFound
+	if event.Pricing*req.Quantity != req.TotalPrice {
+		return dto.UserTicketResponse{}, dto.ErrTotalPriceNotMatch
+
+	}
+
+	if event.Date.After(time.Now()) {
+		return dto.UserTicketResponse{}, dto.ErrEventAlreadyClosed
+	}
+
+	if event.Quota < req.Quantity {
+		return dto.UserTicketResponse{}, dto.ErrQuotaNotEnough
 	}
 
 	userTicket := entity.UserTicket{
@@ -43,9 +64,20 @@ func (s *userTicketService) UserBuyTicket(ctx context.Context, req dto.UserTicke
 		TotalPrice: req.TotalPrice,
 	}
 
-	buyTicket, err := s.userTicketRepo.UserBuyEvent(ctx, nil, userTicket)
+	buyTicket, err := s.userTicketRepo.UserBuyEvent(ctx, tx, userTicket)
 	if err != nil {
 		return dto.UserTicketResponse{}, dto.ErrBuyTicket
+	}
+
+	event.Quota = event.Quota - req.Quantity
+
+	_, err = s.eventRepo.UpdateQuota(ctx, tx, event)
+	if err != nil {
+		return dto.UserTicketResponse{}, dto.ErrUpdateQuota
+	}
+
+	if err = tx.Commit().Error; err != nil {
+		return dto.UserTicketResponse{}, dto.ErrDbTransactionInTicket
 	}
 
 	return dto.UserTicketResponse{

@@ -1,0 +1,18 @@
+[
+  {
+    "name": "Event Konser Bersama",
+    "date": "2024-12-30T17:21:00.000Z",
+    "pricing": 50000,
+    "is_active": true,
+    "quota": 100,
+    "type_id": "konser"
+  },
+  {
+    "name": "Pameran Akbar Informatika ITS",
+    "date": "2024-12-29T17:21:00.000Z",
+    "pricing": 5000,
+    "is_active": true,
+    "quota": 10,
+    "type_id": "pameran"
+  }
+]

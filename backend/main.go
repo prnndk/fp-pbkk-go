@@ -33,14 +33,20 @@ func main() {
 		// Repository
 		userRepository       repository.UserRepository        = repository.NewUserRepository(db)
 		userTicketRepository repository.EventTicketRepository = repository.NewEventTicketRepository(db)
+		pembayaranRepository repository.PembayaranRepository  = repository.NewPembayaranRepository(db)
+		eventRepository      repository.EventRepository       = repository.NewEventRepository(db)
 
 		// Service
 		userService       service.UserService       = service.NewUserService(userRepository, jwtService)
-		userTicketService service.UserTicketService = service.NewUserTicketService(userTicketRepository)
+		userTicketService service.UserTicketService = service.NewUserTicketService(userTicketRepository, eventRepository)
+		pembayaranService service.PembayaranService = service.NewPembayaranService(pembayaranRepository, userTicketRepository)
+		eventService      service.EventService      = service.NewEventService(eventRepository)
 
 		// Controller
 		userController       controller.UserController       = controller.NewUserController(userService)
 		userTicketController controller.UserTicketController = controller.NewUserTicketController(userTicketService)
+		pembayaranController controller.PembayaranController = controller.NewPembayaranController(pembayaranService)
+		eventController      controller.EventController      = controller.NewEventController(eventService)
 	)
 
 	server := gin.Default()
@@ -49,6 +55,8 @@ func main() {
 	// routes
 	routes.User(server, userController, jwtService)
 	routes.UserTicket(server, userTicketController, jwtService)
+	routes.Pembayaran(server, pembayaranController, jwtService)
+	routes.Event(server, eventController, jwtService)
 
 	server.Static("/assets", "./assets")
 	port := os.Getenv("PORT")

@@ -70,12 +70,12 @@ func (s *userService) Register(ctx context.Context, req dto.UserCreateRequest) (
 func (s *userService) VerifyUserLogin(ctx context.Context, req dto.UserLoginRequest) (dto.UserLoginResponse, error) {
 	check, flag, err := s.userRepo.CheckEmail(ctx, nil, req.Email)
 	if err != nil || !flag {
-		return dto.UserLoginResponse{}, dto.ErrEmailNotFound
+		return dto.UserLoginResponse{}, dto.ErrEmailOrPassword
 	}
 
 	checkPassword, err := helpers.CheckPassword(check.Password, []byte(req.Password))
 	if err != nil || !checkPassword {
-		return dto.UserLoginResponse{}, dto.ErrPasswordNotMatch
+		return dto.UserLoginResponse{}, dto.ErrEmailOrPassword
 	}
 
 	token := s.jwtService.GenerateToken(check.ID.String(), check.Role)

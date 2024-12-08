@@ -8,8 +8,9 @@ import (
 )
 
 func UserTicket(route *gin.Engine, userTicketController controller.UserTicketController, jwtService service.JWTService) {
-	routes := route.Group("/api/user/ticket")
+	routes := route.Group("/api/ticket")
 	{
 		routes.POST("", middleware.Authenticate(jwtService), userTicketController.BuyTicket)
+		routes.GET("/me", middleware.Authenticate(jwtService), userTicketController.GetUserTicket)
 	}
 }
