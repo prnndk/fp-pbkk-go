@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { fetchUser, deleteUser } from '../../lib/api'; // Adjust the path to your api.ts file
 
 const UserDashboard = () => {
     const router = useRouter();
@@ -11,6 +12,30 @@ const UserDashboard = () => {
         { id: 2, name: 'Concert B' },
         { id: 3, name: 'Concert C' },
     ]);
+    const [user, setUser] = useState<any | null>(null); // User state to store fetched user data
+    const [error, setError] = useState<string | null>(null); // State for error handling
+    const [loading, setLoading] = useState<boolean>(true); // State for loading indicator
+
+    useEffect(() => {
+        // Fetch user data when the component mounts
+        const userData = localStorage.getItem('user'); // Assuming user data is stored in localStorage
+        if (userData) {
+            const token = JSON.parse(userData).token; // Extract token from user data
+            fetchUser(token)
+                .then((data) => {
+                    setUser(data.data); // Assuming user data is inside `data.data`
+                    setLoading(false); // Set loading to false after data is fetched
+                })
+                .catch((err) => {
+                    console.error(err);
+                    setError('Failed to fetch user data');
+                    setLoading(false); // Set loading to false even on error
+                });
+        } else {
+            setError('No token found, please login');
+            setLoading(false);
+        }
+    }, []);
 
     const handleReturn = () => {
         router.push('/');
@@ -24,19 +49,35 @@ const UserDashboard = () => {
         setIsModalOpen(false);
     };
 
-    const confirmDelete = () => {
-        // Add delete logic here
+    const confirmDelete = async () => {
+        const userData = localStorage.getItem('user');
+        if (userData) {
+            const token = JSON.parse(userData).token;
+            try {
+                await deleteUser(token);
+                console.log("User deleted successfully"); // Log success message
+                localStorage.removeItem('user'); // Remove user data from localStorage
+                router.push('/'); // Redirect to home page after deletion
+            } catch (error) {
+                console.error("Error in confirmDelete:", error); // Log error message
+                setError('Failed to delete user');
+            }
+        }
         setIsModalOpen(false);
     };
 
-    const deleteTicket = (id) => {
-        setTickets(tickets.filter(ticket => ticket.id !== id));
+    const deleteTicket = (id: number) => {
+        setTickets(tickets.filter((ticket) => ticket.id !== id));
     };
 
-    const user = {
-        name: 'John Doe',
-        email: 'john.doe@example.com',
-    };
+    // Display loading or error message if needed
+    if (loading) {
+        return <div>Loading...</div>;
+    }
+
+    if (error) {
+        return <div>Error: {error}</div>;
+    }
 
     return (
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
@@ -45,14 +86,14 @@ const UserDashboard = () => {
                 <br />
                 <br />
                 <div>
-                    <p><strong>Name:</strong> {user.name}</p>
-                    <p><strong>Email:</strong> {user.email}</p>
+                    <p><strong>Name:</strong> {user?.name}</p>
+                    <p><strong>Email:</strong> {user?.email}</p>
                 </div>
                 <br />
                 <div>
                     <h2>Event Tickets</h2>
                     <ul>
-                        {tickets.map(ticket => (
+                        {tickets.map((ticket) => (
                             <li key={ticket.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                 {ticket.name}
                                 <button onClick={() => deleteTicket(ticket.id)} style={{ color: 'red' }}>Delete</button>

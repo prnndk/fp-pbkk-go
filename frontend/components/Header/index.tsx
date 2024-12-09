@@ -1,9 +1,13 @@
 "use client";
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import menuData from "./menuData";
+
+interface User {
+  name: string;
+  // Add other properties if needed
+}
 
 const Header = () => {
   // Navbar toggle
@@ -34,6 +38,20 @@ const Header = () => {
       setOpenIndex(index);
     }
   };
+
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    const userData = localStorage.getItem("user");
+    if (userData) {
+      try {
+        const parsedUser = JSON.parse(userData);
+        setUser(parsedUser);
+      } catch (error) {
+        console.error("Failed to parse user data:", error);
+      }
+    }
+  }, []);
 
   const usePathName = usePathname();
 
@@ -117,15 +135,6 @@ const Header = () => {
                                 openIndex === index ? "block" : "hidden"
                               }`}
                             >
-                              {menuItem.submenu.map((submenuItem, index) => (
-                                <Link
-                                  href={submenuItem.path}
-                                  key={index}
-                                  className="block rounded py-2.5 text-sm text-dark hover:text-primary dark:text-white/70 dark:hover:text-white lg:px-3"
-                                >
-                                  {submenuItem.title}
-                                </Link>
-                              ))}
                             </div>
                           </>
                         )}
@@ -134,19 +143,34 @@ const Header = () => {
                   </ul>
                 </nav>
               </div>
-              <div className="flex items-center justify-end pr-16 lg:pr-0">
-                <Link
-                  href="/signin"
-                  className="hidden px-7 py-3 text-base font-medium text-dark hover:opacity-70 dark:text-white md:block"
-                >
-                  Sign In
-                </Link>
-                <Link
-                  href="/signup"
-                  className="ease-in-up shadow-btn hover:shadow-btn-hover hidden rounded-sm bg-primary px-8 py-3 text-base font-medium text-white transition duration-300 hover:bg-opacity-90 md:block md:px-9 lg:px-6 xl:px-9"
-                >
-                  Sign Up
-                </Link>
+              <div className="flex items-center justify-end pr-16 lg:pr-0 space-x-4">
+                {user ? (
+                  <div className="dropdown">
+                    <button className="dropbtn">{user.name}</button>
+                    <div className="dropdown-content">
+                      <Link href="/userdashboard" className="px-5 text-dark dark:text-white">Dashboard</Link>
+                      <a href="/" onClick={() => {
+                        localStorage.removeItem("user");
+                        window.location.reload();
+                      }}>Logout</a>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <Link
+                      href="/login"
+                      className="hidden px-7 py-3 text-base font-medium text-dark hover:opacity-70 dark:text-white md:block"
+                    >
+                      Sign In
+                    </Link>
+                    <Link
+                      href="/register"
+                      className="ease-in-up shadow-btn hover:shadow-btn-hover hidden rounded-sm bg-primary px-8 py-3 text-base font-medium text-white transition duration-300 hover:bg-opacity-90 md:block md:px-9 lg:px-6 xl:px-9"
+                    >
+                      Sign Up
+                    </Link>
+                  </>
+                )}
               </div>
             </div>
           </div>

@@ -11,12 +11,12 @@ import { useRouter } from 'next/navigation';
 
 interface BasicCardProps {
   word: string;
-  description: string;
+  type: string;
   ticketCount: number;
   price: string;
 }
 
-export default function BasicCard({ word, description, ticketCount, price }: BasicCardProps) {
+export default function BasicCard({ word, type, ticketCount, price }: BasicCardProps) {
   const router = useRouter();
 
   const handleDetails = () => {
@@ -31,7 +31,7 @@ export default function BasicCard({ word, description, ticketCount, price }: Bas
           </Typography>
           <Typography sx={{ mb: 1.5 }}>{price}</Typography>
           <Typography variant="body2">
-            {description}
+            {type}
             <br />
             <br />
             {`Jumlah Tiket = ${ticketCount}`}
