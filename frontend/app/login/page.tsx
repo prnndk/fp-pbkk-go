@@ -131,7 +131,7 @@ const SigninPage = () => {
                   <div className="mb-6">
                     <button
                       type="submit"
-                      className="shadow-submit dark:shadow-submit-dark flex w-full items-center justify-center rounded-sm bg-primary px-9 py-4 text-base font-medium text-white duration-300 hover:bg-primary/90"
+                      className="shadow-submit dark:shadow-submit-dark flex w-full items-center justify-center rounded-sm bg-primary px-9 py-4 text-base font-medium text-body-color duration-300 hover:bg-primary/90"
                       disabled={loading} // Disable button during loading
                     >
                       {loading ? "Signing in..." : "Sign in"}
@@ -140,7 +140,7 @@ const SigninPage = () => {
                 </form>
                 <p className="text-center text-base font-medium text-body-color">
                   Don’t you have an account?{" "}
-                  <Link href="/register" className="text-primary hover:underline">
+                  <Link href="/register" className="text-black hover:underline">
                     Sign up
                   </Link>
                 </p>

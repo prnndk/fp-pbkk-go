@@ -136,7 +136,7 @@ const SignupPage = () => {
                   </div>
                   <div className="mb-6">
                     <button
-                      className="shadow-submit dark:shadow-submit-dark flex w-full items-center justify-center rounded-sm bg-primary px-9 py-4 text-base font-medium text-white duration-300 hover:bg-primary/90"
+                      className="shadow-submit dark:shadow-submit-dark flex w-full items-center justify-center rounded-sm bg-primary px-9 py-4 text-base font-medium text-body-color duration-300 hover:bg-primary/90"
                       type="submit"
                       disabled={loading} // Disable the button while loading
                     >
@@ -146,7 +146,7 @@ const SignupPage = () => {
                 </form>
                 <p className="text-center text-base font-medium text-body-color">
                   Already have an account?{" "}
-                  <Link href="/login" className="text-primary hover:underline">
+                  <Link href="/login" className="text-black hover:underline">
                     Sign in
                   </Link>
                 </p>

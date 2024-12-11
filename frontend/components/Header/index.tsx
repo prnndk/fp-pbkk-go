@@ -61,7 +61,7 @@ const Header = () => {
       <header
         className={`header left-0 top-0 z-40 flex w-full items-center ${
           sticky
-            ? "fixed z-[9999] bg-white !bg-opacity-80 shadow-sticky backdrop-blur-sm transition dark:bg-gray-dark dark:shadow-sticky-dark"
+            ? "fixed z-[9999] bg-black !bg-opacity-80 shadow-sticky backdrop-blur-sm transition dark:bg-gray-dark dark:shadow-sticky-dark"
             : "absolute bg-transparent"
         }`}
       >
@@ -150,7 +150,7 @@ const Header = () => {
                     <div className="dropdown-content">
                       <Link
                         href="/userdashboard"
-                        className="px-5 text-dark dark:text-white"
+                        className="px-5 text-white dark:text-white"
                       >
                         Dashboard
                       </Link>
