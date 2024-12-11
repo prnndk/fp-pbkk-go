@@ -16,7 +16,7 @@ const (
 var (
 	ErrUserTicketAlreadyExists = errors.New("user already have ticket for this event")
 	ErrEventCannotBeFound      = errors.New("event cannot be found")
-	ErrIdTicketNotFound              = errors.New("ticket id not found")
+	ErrIdTicketNotFound        = errors.New("ticket id not found")
 	ErrBuyTicket               = errors.New("failed to buy ticket")
 	ErrGetUserTicket           = errors.New("failed to get user ticket")
 	ErrTotalPriceNotMatch      = errors.New("total price not match")
@@ -34,11 +34,13 @@ type (
 	}
 
 	UserTicketResponse struct {
-		ID         string `json:"id"`
-		EventID    string `json:"event_id"`
-		UserID     string `json:"user_id"`
-		Quantity   int    `json:"quantity"`
-		TotalPrice int    `json:"total_price"`
+		ID         string                   `json:"id"`
+		EventID    string                   `json:"event_id"`
+		Event      EventResponseWithoutType `json:"event"`
+		UserID     string                   `json:"user_id"`
+		User       UserResponse             `json:"user"`
+		Quantity   int                      `json:"quantity"`
+		TotalPrice int                      `json:"total_price"`
 	}
 
 	UserTicketPaginationResponse struct {

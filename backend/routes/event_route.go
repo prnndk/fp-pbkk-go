@@ -11,5 +11,6 @@ func Event(route *gin.Engine, eventController controller.EventController, jwtSer
 	routes := route.Group("/api/event")
 	{
 		routes.GET("", middleware.Authenticate(jwtService), eventController.GetAllEvent)
+		routes.GET("/:id", middleware.Authenticate(jwtService), eventController.GetSingleEvent)
 	}
 }

@@ -10,6 +10,7 @@ import (
 type (
 	EventService interface {
 		GetAllEvent(ctx context.Context) ([]dto.GetAllEventResponse, error)
+		GetSingleEvent(ctx context.Context, eventId string) (dto.GetAllEventResponse, error)
 	}
 
 	eventService struct {
@@ -47,4 +48,24 @@ func (es *eventService) GetAllEvent(ctx context.Context) ([]dto.GetAllEventRespo
 	}
 
 	return eventResponse, nil
+}
+
+func (es *eventService) GetSingleEvent(ctx context.Context, eventId string) (dto.GetAllEventResponse, error) {
+	event, err := es.eventRepo.FindEventById(ctx, nil, eventId)
+	if err != nil {
+		return dto.GetAllEventResponse{}, dto.ErrEventCannotBeFound
+	}
+
+	return dto.GetAllEventResponse{
+		ID:       event.ID.String(),
+		Name:     event.Name,
+		Date:     event.Date,
+		Pricing:  event.Pricing,
+		IsActive: event.IsActive,
+		Quota:    event.Quota,
+		Type: dto.TypeResponse{
+			ID:   event.Type.ID.String(),
+			Name: event.Type.Name,
+		},
+	}, nil
 }

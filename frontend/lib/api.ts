@@ -1,7 +1,7 @@
 import axios from "axios";
-import { ApiResponse, Event, User } from "../lib/definition"; // Adjust the path to your interface file
+import { ApiResponse, Event, User, UserTicket } from "../lib/definition"; // Adjust the path to your interface file
 
-const API_BASE_URL = 'http://127.0.0.1:8888/api'; // Replace with your backend URL
+const API_BASE_URL = "http://127.0.0.1:8888/api"; // Replace with your backend URL
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -19,24 +19,29 @@ export const fetchEvents = async (): Promise<ApiResponse<Event[]>> => {
 // User login
 export const loginUser = async (email, password) => {
   const formData = new FormData();
-  formData.append('email', email);
-  formData.append('password', password);
+  formData.append("email", email);
+  formData.append("password", password);
 
   const res = await fetch(`${API_BASE_URL}/user/login`, {
-    method: 'POST',
-    body: formData
+    method: "POST",
+    body: formData,
   });
 
   if (!res.ok) {
-    throw new Error('Failed to login');
+    throw new Error("Failed to login");
   }
 
   const data = await res.json();
-  return data;  // This returns the response including the token and role
+  return data; // This returns the response including the token and role
 };
 
 // User registration
-export const registerUser = async (name: string, phone: string, email: string, password: string): Promise<ApiResponse<User>> => {
+export const registerUser = async (
+  name: string,
+  phone: string,
+  email: string,
+  password: string,
+): Promise<ApiResponse<User>> => {
   const formData = new FormData();
   formData.append("email", email);
   formData.append("name", name);
@@ -52,7 +57,7 @@ export const fetchUser = async (token: string): Promise<ApiResponse<User>> => {
   try {
     const response = await api.get<ApiResponse<User>>("/user/me", {
       headers: {
-        Authorization: `Bearer ${token}`,  // Adding the Bearer token for authorization
+        Authorization: `Bearer ${token}`, // Adding the Bearer token for authorization
       },
     });
     if (response.status !== 200) {
@@ -68,7 +73,8 @@ export const fetchUser = async (token: string): Promise<ApiResponse<User>> => {
 // Delete user
 export const deleteUser = async (token: string): Promise<void> => {
   try {
-    const response = await api.delete("/user", { // Adjust the endpoint URL as needed
+    const response = await api.delete("/user", {
+      // Adjust the endpoint URL as needed
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -83,3 +89,88 @@ export const deleteUser = async (token: string): Promise<void> => {
   }
 };
 
+export const fetchEventData = async (
+  token: string,
+): Promise<ApiResponse<Event[]>> => {
+  try {
+    const response = await api.get<ApiResponse<Event[]>>("/event", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (response.status !== 200) {
+      throw new Error("Failed to fetch event data");
+    }
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching event data:", error);
+    throw new Error("Failed to fetch event data");
+  }
+};
+
+export const fetchUserEventData = async (
+  token: string,
+): Promise<ApiResponse<UserTicket[]>> => {
+  try {
+    const response = await api.get<ApiResponse<UserTicket[]>>("/ticket/me", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (response.status !== 200) {
+      throw new Error("Failed to fetch event data");
+    }
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching event data:", error);
+    throw new Error("Failed to fetch event data");
+  }
+};
+
+export const fetchEventById = async (token: string, id: string) => {
+  try {
+    const response = await api.get(`/event/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (response.status !== 200) {
+      throw new Error("Failed to fetch event data");
+    }
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching event data:", error);
+    throw new Error("Failed to fetch event data");
+  }
+};
+
+export const buyTicket = async (
+  event_id: string,
+  quantity: number,
+  total_price: number,
+) => {
+  try {
+    const userData = localStorage.getItem("user");
+    if (userData) {
+      const token = JSON.parse(userData).token;
+
+      const payload = {
+        event_id,
+        quantity: Number(quantity), // Send as an integer
+        total_price, // Send as an integer
+      };
+
+      const response = await api.post("/ticket", payload, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json", // Ensure JSON is sent
+        },
+      });
+
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error buying ticket:", error);
+    throw new Error("Failed to buy ticket");
+  }
+};

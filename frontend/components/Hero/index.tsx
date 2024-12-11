@@ -1,40 +1,54 @@
-import Link from "next/link";
-import Box from '@mui/material/Box';
+"use client";
+import Box from "@mui/material/Box";
 import Card from "@/components/Card/card";
-import Typography from '@mui/material/Typography';
+import Typography from "@mui/material/Typography";
+import { useEffect, useState } from "react";
+import { fetchEventData } from "@/lib/api";
 
 const Hero = () => {
+  const [eventData, setEventData] = useState<any[]>([]);
+
+  useEffect(() => {
+    const userData = localStorage.getItem("user");
+    if (userData) {
+      const token = JSON.parse(userData).token;
+      fetchEventData(token)
+        .then((data) => {
+          console.log(data.data);
+          setEventData(data.data);
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    }
+  }, []);
+
   return (
     <>
-    <Typography variant="h4" align="center" gutterBottom sx={{ mt: 15 }}>
-      Welcome To Ticket List!
-    </Typography>
-    <Box sx={{ m: 10, display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 2, justifyContent: 'center', alignItems: 'center' }}>
-     <Card 
-       word="Event 1" 
-       type="Lorem ipsum dolor sit amet, consectetur adipisicing elit. Mollitia enim veritatis est quas maiores? Sed, placeat quae eius fuga fugit animi dicta nostrum ratione cumque, consectetur beatae est, modi sapiente." 
-       ticketCount={10} 
-       price="$10"
-     />
-     <Card 
-       word="Event 2" 
-       type="Lorem ipsum dolor sit amet, consectetur adipisicing elit. Mollitia enim veritatis est quas maiores? Sed, placeat quae eius fuga fugit animi dicta nostrum ratione cumque, consectetur beatae est, modi sapiente." 
-       ticketCount={20} 
-       price="$20"
-     />
-     <Card 
-       word="Event 3" 
-       type="tes" 
-       ticketCount={30} 
-       price="$30"
-     />
-     <Card 
-       word="Event 4" 
-       type="Lorem ipsum dolor sit amet, consectetur adipisicing elit. Mollitia enim veritatis est quas maiores? Sed, placeat quae eius fuga fugit animi dicta nostrum ratione cumque, consectetur beatae est, modi sapiente." 
-       ticketCount={40} 
-       price="$40"
-     />
-    </Box>
+      <Typography variant="h4" align="center" gutterBottom sx={{ mt: 15 }}>
+        Welcome To Ticket List!
+      </Typography>
+      <Box
+        sx={{
+          m: 10,
+          display: "grid",
+          gridTemplateColumns: "repeat(3, 1fr)",
+          gap: 2,
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        {eventData.map((event: any) => (
+          <Card
+            key={event.id}
+            word={event.name}
+            type={event.type.name}
+            ticketCount={event.quota}
+            price={event.pricing}
+            id={event.id}
+          />
+        ))}
+      </Box>
     </>
   );
 };

@@ -97,10 +97,27 @@ func (s *userTicketService) GetUserTicket(ctx context.Context, user_id string) (
 
 	var userTicketResponse []dto.UserTicketResponse
 	for _, userTicket := range userTickets {
+		dataUser := dto.UserResponse{
+			ID:          userTicket.User.ID.String(),
+			Name:        userTicket.User.Name,
+			PhoneNumber: userTicket.User.PhoneNumber,
+			Email:       userTicket.User.Email,
+			Role:        userTicket.User.Role,
+		}
+		dataEvent := dto.EventResponseWithoutType{
+			ID:       userTicket.Event.ID.String(),
+			Name:     userTicket.Event.Name,
+			Date:     userTicket.Event.Date,
+			Pricing:  userTicket.Event.Pricing,
+			IsActive: userTicket.Event.IsActive,
+			Quota:    userTicket.Event.Quota,
+		}
 		userTicketResponse = append(userTicketResponse, dto.UserTicketResponse{
 			ID:         userTicket.ID.String(),
 			UserID:     userTicket.UserId,
+			User:       dataUser,
 			EventID:    userTicket.EventId,
+			Event:      dataEvent,
 			Quantity:   userTicket.Quantity,
 			TotalPrice: userTicket.TotalPrice,
 		})

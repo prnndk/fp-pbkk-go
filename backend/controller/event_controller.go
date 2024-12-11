@@ -12,6 +12,7 @@ import (
 type (
 	EventController interface {
 		GetAllEvent(ctx *gin.Context)
+		GetSingleEvent(ctx *gin.Context)
 	}
 
 	eventController struct {
@@ -36,6 +37,28 @@ func (ec *eventController) GetAllEvent(ctx *gin.Context) {
 	response := utils.Response{
 		Status:  true,
 		Message: dto.MESSAGE_SUCCESS_GET_ALL_EVENT,
+		Data:    result,
+	}
+
+	ctx.JSON(http.StatusOK, response)
+}
+
+func (ec *eventController) GetSingleEvent(ctx *gin.Context) {
+	eventId := ctx.Param("id")
+	result, err := ec.eventService.GetSingleEvent(ctx.Request.Context(), eventId)
+	if err != nil {
+		res := utils.BuildResponseFailed(dto.MESSAGE_FAILED_GET_SINGLE_EVENT, err.Error(), nil)
+		if err == dto.ErrEventCannotBeFound {
+			ctx.JSON(http.StatusNotFound, res)
+		} else {
+			ctx.JSON(http.StatusInternalServerError, res)
+		}
+		return
+	}
+
+	response := utils.Response{
+		Status:  true,
+		Message: dto.MESSAGE_SUCCESS_GET_SINGLE_EVENT,
 		Data:    result,
 	}
 

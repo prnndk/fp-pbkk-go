@@ -43,7 +43,7 @@ func (r *eventTicketRepository) GetUserTicketByUserId(ctx context.Context, tx *g
 	}
 
 	var userTickets []entity.UserTicket
-	if err := tx.WithContext(ctx).Where("user_id = ?", userId).Find(&userTickets).Error; err != nil {
+	if err := tx.WithContext(ctx).Where("user_id = ?", userId).Preload("Event").Preload("User").Find(&userTickets).Error; err != nil {
 		return []entity.UserTicket{}, err
 	}
 

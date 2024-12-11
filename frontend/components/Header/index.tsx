@@ -3,6 +3,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import menuData from "./menuData";
+import { Button } from "../ui/button";
 
 interface User {
   name: string;
@@ -60,7 +61,7 @@ const Header = () => {
       <header
         className={`header left-0 top-0 z-40 flex w-full items-center ${
           sticky
-            ? "dark:bg-gray-dark dark:shadow-sticky-dark fixed z-[9999] bg-white !bg-opacity-80 shadow-sticky backdrop-blur-sm transition"
+            ? "fixed z-[9999] bg-white !bg-opacity-80 shadow-sticky backdrop-blur-sm transition dark:bg-gray-dark dark:shadow-sticky-dark"
             : "absolute bg-transparent"
         }`}
       >
@@ -107,7 +108,7 @@ const Header = () => {
                             className={`flex py-2 text-base lg:mr-0 lg:inline-flex lg:px-0 lg:py-6 ${
                               usePathName === menuItem.path
                                 ? "text-primary dark:text-white"
-                                : "text-dark hover:text-primary dark:text-white/70 dark:hover:text-white"
+                                : "text-gray-400 hover:text-primary dark:text-white/70 dark:hover:text-white"
                             }`}
                           >
                             {menuItem.title}
@@ -134,8 +135,7 @@ const Header = () => {
                               className={`submenu relative left-0 top-full rounded-sm bg-white transition-[top] duration-300 group-hover:opacity-100 dark:bg-dark lg:invisible lg:absolute lg:top-[110%] lg:block lg:w-[250px] lg:p-4 lg:opacity-0 lg:shadow-lg lg:group-hover:visible lg:group-hover:top-full ${
                                 openIndex === index ? "block" : "hidden"
                               }`}
-                            >
-                            </div>
+                            ></div>
                           </>
                         )}
                       </li>
@@ -143,32 +143,36 @@ const Header = () => {
                   </ul>
                 </nav>
               </div>
-              <div className="flex items-center justify-end pr-16 lg:pr-0 space-x-4">
+              <div className="flex items-center justify-end space-x-4 pr-16 lg:pr-0">
                 {user ? (
                   <div className="dropdown">
                     <button className="dropbtn">{user.name}</button>
                     <div className="dropdown-content">
-                      <Link href="/userdashboard" className="px-5 text-dark dark:text-white">Dashboard</Link>
-                      <a href="/" onClick={() => {
-                        localStorage.removeItem("user");
-                        window.location.reload();
-                      }}>Logout</a>
+                      <Link
+                        href="/userdashboard"
+                        className="px-5 text-dark dark:text-white"
+                      >
+                        Dashboard
+                      </Link>
+                      <a
+                        href="/"
+                        onClick={() => {
+                          localStorage.removeItem("user");
+                          window.location.reload();
+                        }}
+                      >
+                        Logout
+                      </a>
                     </div>
                   </div>
                 ) : (
                   <>
-                    <Link
-                      href="/login"
-                      className="hidden px-7 py-3 text-base font-medium text-dark hover:opacity-70 dark:text-white md:block"
-                    >
-                      Sign In
-                    </Link>
-                    <Link
-                      href="/register"
-                      className="ease-in-up shadow-btn hover:shadow-btn-hover hidden rounded-sm bg-primary px-8 py-3 text-base font-medium text-white transition duration-300 hover:bg-opacity-90 md:block md:px-9 lg:px-6 xl:px-9"
-                    >
-                      Sign Up
-                    </Link>
+                    <Button variant="link">
+                      <Link href="/login">Sign in</Link>
+                    </Button>
+                    <Button variant="link">
+                      <Link href="/register">Sign Up</Link>
+                    </Button>
                   </>
                 )}
               </div>

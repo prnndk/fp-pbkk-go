@@ -171,6 +171,7 @@ func (s *userService) Update(ctx context.Context, req dto.UserUpdateRequest, use
 
 func (s *userService) Delete(ctx context.Context, userId string) error {
 	user, err := s.userRepo.GetUserById(ctx, nil, userId)
+
 	if err != nil {
 		return dto.ErrUserNotFound
 	}
