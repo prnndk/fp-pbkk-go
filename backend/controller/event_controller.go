@@ -13,6 +13,7 @@ type (
 	EventController interface {
 		GetAllEvent(ctx *gin.Context)
 		GetSingleEvent(ctx *gin.Context)
+		UpdateQuotaEvent(ctx *gin.Context)
 	}
 
 	eventController struct {
@@ -59,6 +60,31 @@ func (ec *eventController) GetSingleEvent(ctx *gin.Context) {
 	response := utils.Response{
 		Status:  true,
 		Message: dto.MESSAGE_SUCCESS_GET_SINGLE_EVENT,
+		Data:    result,
+	}
+
+	ctx.JSON(http.StatusOK, response)
+}
+
+func (ec *eventController) UpdateQuotaEvent(ctx *gin.Context) {
+	eventId := ctx.Param("id")
+	var quotaRequest dto.QuotaResponse
+	if err := ctx.ShouldBindJSON(&quotaRequest); err != nil {
+		res := utils.BuildResponseFailed(dto.MESSAGE_FAILED_UPDATE_QUOTA, err.Error(), nil)
+		ctx.JSON(http.StatusBadRequest, res)
+		return
+	}
+
+	result, err := ec.eventService.UpdateQuoteEvent(ctx.Request.Context(), eventId, quotaRequest.Quota)
+	if err != nil {
+		res := utils.BuildResponseFailed(dto.MESSAGE_FAILED_UPDATE_QUOTA, err.Error(), nil)
+		ctx.JSON(http.StatusInternalServerError, res)
+		return
+	}
+
+	response := utils.Response{
+		Status:  true,
+		Message: dto.MESSAGE_SUCCESS_UPDATE_QUOTA,
 		Data:    result,
 	}
 

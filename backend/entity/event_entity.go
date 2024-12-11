@@ -31,3 +31,7 @@ type EventWithTypeName struct {
 
 	Timestamp
 }
+
+type QuotaEvent struct {
+	Quota int `json:"quota"`
+}

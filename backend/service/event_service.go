@@ -11,6 +11,7 @@ type (
 	EventService interface {
 		GetAllEvent(ctx context.Context) ([]dto.GetAllEventResponse, error)
 		GetSingleEvent(ctx context.Context, eventId string) (dto.GetAllEventResponse, error)
+		UpdateQuoteEvent(ctx context.Context, eventId string, quota int) (dto.QuotaResponse, error)
 	}
 
 	eventService struct {
@@ -67,5 +68,26 @@ func (es *eventService) GetSingleEvent(ctx context.Context, eventId string) (dto
 			ID:   event.Type.ID.String(),
 			Name: event.Type.Name,
 		},
+	}, nil
+}
+
+func (es *eventService) UpdateQuoteEvent(ctx context.Context, eventId string, quota int) (dto.QuotaResponse, error) {
+	event, err := es.eventRepo.FindEventById(ctx, nil, eventId)
+	if err != nil {
+		return dto.QuotaResponse{}, dto.ErrEventCannotBeFound
+	}
+
+	if event.Quota < quota {
+		return dto.QuotaResponse{}, dto.ErrQuotaNotEnough
+	}
+
+	event.Quota -= quota
+	updatedEvent, err := es.eventRepo.UpdateQuota(ctx, nil, event)
+	if err != nil {
+		return dto.QuotaResponse{}, dto.ErrUpdateQuota
+	}
+
+	return dto.QuotaResponse{
+		Quota: updatedEvent.Quota,
 	}, nil
 }

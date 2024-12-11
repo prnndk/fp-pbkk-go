@@ -69,7 +69,7 @@ const EventSquare = () => {
     buyTicket(
       id,
       formData.quantity,
-      data.pricing * (quantity <= 10 ? quantity : 10),
+      data.pricing * formData.quantity,
     )
       .then(() => {
         alert("Ticket purchased successfully!");
@@ -128,7 +128,7 @@ const EventSquare = () => {
           {new Intl.NumberFormat("id-ID", {
             style: "currency",
             currency: "IDR",
-          }).format(data.pricing * (quantity <= 10 ? quantity : 10))}
+          }).format(data.pricing * quantity)}
         </p>
         <div className="mt-4 flex flex-row space-x-4">
           <Button

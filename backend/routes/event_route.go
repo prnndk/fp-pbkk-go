@@ -14,3 +14,10 @@ func Event(route *gin.Engine, eventController controller.EventController, jwtSer
 		routes.GET("/:id", middleware.Authenticate(jwtService), eventController.GetSingleEvent)
 	}
 }
+
+func Quota(route *gin.Engine, eventController controller.EventController, jwtService service.JWTService) {
+	routes := route.Group("/api/event")
+	{
+		routes.PUT("/:id", middleware.Authenticate(jwtService), eventController.UpdateQuotaEvent)
+	}
+}
