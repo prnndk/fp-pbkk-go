@@ -13,6 +13,7 @@ type (
 	UserTicketService interface {
 		UserBuyTicket(ctx context.Context, req dto.UserTicketCreateRequest, userId string) (dto.UserTicketResponse, error)
 		GetUserTicket(ctx context.Context, user_id string) ([]dto.UserTicketResponse, error)
+		GetUserTicketById(ctx context.Context, user_ticket_id string) (dto.UserTicketResponse, error)
 	}
 
 	userTicketService struct {
@@ -124,4 +125,36 @@ func (s *userTicketService) GetUserTicket(ctx context.Context, user_id string) (
 	}
 
 	return userTicketResponse, nil
+}
+
+func (s *userTicketService) GetUserTicketById(ctx context.Context, user_ticket_id string) (dto.UserTicketResponse, error) {
+	userTicket, err := s.userTicketRepo.GetTicketById(ctx, nil, user_ticket_id)
+	if err != nil {
+		return dto.UserTicketResponse{}, dto.ErrIdTicketNotFound
+	}
+
+	dataUser := dto.UserResponse{
+		ID:          userTicket.User.ID.String(),
+		Name:        userTicket.User.Name,
+		PhoneNumber: userTicket.User.PhoneNumber,
+		Email:       userTicket.User.Email,
+		Role:        userTicket.User.Role,
+	}
+	dataEvent := dto.EventResponseWithoutType{
+		ID:       userTicket.Event.ID.String(),
+		Name:     userTicket.Event.Name,
+		Date:     userTicket.Event.Date,
+		Pricing:  userTicket.Event.Pricing,
+		IsActive: userTicket.Event.IsActive,
+		Quota:    userTicket.Event.Quota,
+	}
+	return dto.UserTicketResponse{
+		ID:         userTicket.ID.String(),
+		UserID:     userTicket.UserId,
+		User:       dataUser,
+		EventID:    userTicket.EventId,
+		Event:      dataEvent,
+		Quantity:   userTicket.Quantity,
+		TotalPrice: userTicket.TotalPrice,
+	}, nil
 }
