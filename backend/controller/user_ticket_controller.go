@@ -13,6 +13,7 @@ type (
 	UserTicketController interface {
 		BuyTicket(ctx *gin.Context)
 		GetUserTicket(ctx *gin.Context)
+		GetUserTicketById(ctx *gin.Context)
 	}
 
 	userTicketController struct {
@@ -59,6 +60,20 @@ func (c *userTicketController) GetUserTicket(ctx *gin.Context) {
 	}
 
 	result, err := c.userTicketService.GetUserTicket(ctx.Request.Context(), userId)
+	if err != nil {
+		res := utils.BuildResponseFailed(dto.MESSAGE_FAILED_GET_USER_TICKET, err.Error(), nil)
+		ctx.JSON(http.StatusBadRequest, res)
+		return
+	}
+
+	res := utils.BuildResponseSuccess(dto.MESSAGE_SUCCESS_GET_USER_TICKET, result)
+	ctx.JSON(http.StatusOK, res)
+}
+
+func (c *userTicketController) GetUserTicketById(ctx *gin.Context) {
+	ticketId := ctx.Param("id")
+
+	result, err := c.userTicketService.GetUserTicketById(ctx.Request.Context(), ticketId)
 	if err != nil {
 		res := utils.BuildResponseFailed(dto.MESSAGE_FAILED_GET_USER_TICKET, err.Error(), nil)
 		ctx.JSON(http.StatusBadRequest, res)

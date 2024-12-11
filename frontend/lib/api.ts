@@ -174,3 +174,20 @@ export const buyTicket = async (
     throw new Error("Failed to buy ticket");
   }
 };
+
+export const fetchSingleTicket = async (token: string, id: string) => {
+  try {
+    const response = await api.get(`/ticket/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (response.status !== 200) {
+      throw new Error("Failed to fetch event data");
+    }
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching event data:", error);
+    throw new Error("Failed to fetch event data");
+  }
+};
