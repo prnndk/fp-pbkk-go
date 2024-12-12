@@ -5,9 +5,7 @@ import { useRouter, useParams } from "next/navigation";
 import NotFound from "@/components/NotFound";
 
 import { fetchSingleTicket, deleteUserTicket } from "@/lib/api"; // Updated import
-import { Button } from "@/components/ui/button";
 import { Typography } from "@mui/material";
-import Link from "next/link";
 
 const Tickets = () => {
   const router = useRouter();
@@ -15,7 +13,6 @@ const Tickets = () => {
 
   const [data, setData] = useState<any | null>(null);
   const [token, setToken] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null); // Added state for error
 
   useEffect(() => {
     const userData = localStorage.getItem("user");
@@ -30,21 +27,7 @@ const Tickets = () => {
           console.error("Failed to fetch event data:", error);
         });
     }
-  }, []);
-
-  const deleteTicket = async (id: string) => {
-    const userData = localStorage.getItem("user");
-    if (userData) {
-      const token = JSON.parse(userData).token;
-      try {
-        await deleteUserTicket(token, id);
-        router.push("/tickets"); // Redirect to tickets page after deletion
-      } catch (error) {
-        console.error("Error deleting ticket:", error);
-        setError("Failed to delete ticket");
-      }
-    }
-  };
+  }, [id]);
 
   if (!data) {
     return <NotFound />;
@@ -80,14 +63,6 @@ const Tickets = () => {
                 Total Harga: Rp {data.total_price.toLocaleString("id-ID")}
               </Typography>
             </div>
-            <Button
-              variant="destructive" // Changed from "contained" to "destructive"
-              color="secondary"
-              onClick={() => deleteTicket(data.id)}
-            >
-              Delete Ticket
-            </Button>
-            {error && <Typography color="error">{error}</Typography>}
           </div>
         </div>
       </div>

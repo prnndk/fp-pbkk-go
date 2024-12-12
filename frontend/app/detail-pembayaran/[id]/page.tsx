@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
-import axios from "axios";
 import NotFound from "@/components/NotFound";
 import { Button } from "@/components/ui/button";
 import { z } from "zod";

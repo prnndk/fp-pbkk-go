@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import NotFound from "@/components/NotFound";
 
-import { fetchUserEventData } from "@/lib/api";
+import { deleteUserTicket, fetchUserEventData } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Typography } from "@mui/material";
 import Link from "next/link";
@@ -14,6 +14,7 @@ const Tickets = () => {
 
   const [data, setData] = useState<any | null>(null);
   const [token, setToken] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null); // Added state for error
 
   useEffect(() => {
     const userData = localStorage.getItem("user");
@@ -34,6 +35,19 @@ const Tickets = () => {
     return <NotFound />;
   }
 
+  const deleteTicket = async (id: string) => {
+    const userData = localStorage.getItem("user");
+    if (userData) {
+      const token = JSON.parse(userData).token;
+      try {
+        await deleteUserTicket(token, id);
+        router.push("/tickets"); // Redirect to tickets page after deletion
+      } catch (error) {
+        console.error("Error deleting ticket:", error);
+        setError("Failed to delete ticket");
+      }
+    }
+  };
   return (
     <section className="flex h-screen items-center justify-center p-8">
       <div className="container mx-auto max-w-7xl">
@@ -58,6 +72,14 @@ const Tickets = () => {
                     Total Harga: Rp {item.total_price.toLocaleString("id-ID")}
                   </Typography>
                 </div>
+                <Button
+                  variant="destructive" // Changed from "contained" to "destructive"
+                  className="bg-red-600 text-white hover:bg-red-800"
+                  onClick={() => deleteTicket(data.id)}
+                >
+                  Delete Ticket
+                </Button>
+                {error && <Typography color="error">{error}</Typography>}
               </div>
             </Link>
           ))}
