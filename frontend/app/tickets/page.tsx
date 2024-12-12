@@ -41,7 +41,8 @@ const Tickets = () => {
       const token = JSON.parse(userData).token;
       try {
         await deleteUserTicket(token, id);
-        router.push("/tickets"); // Redirect to tickets page after deletion
+        //reload windows using window
+        window.location.reload();
       } catch (error) {
         console.error("Error deleting ticket:", error);
         setError("Failed to delete ticket");
@@ -75,7 +76,7 @@ const Tickets = () => {
                 <Button
                   variant="destructive" // Changed from "contained" to "destructive"
                   className="bg-red-600 text-white hover:bg-red-800"
-                  onClick={() => deleteTicket(data.id)}
+                  onClick={() => deleteTicket(item.id)}
                 >
                   Delete Ticket
                 </Button>
