@@ -16,7 +16,7 @@ import {
   FormControl,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { fetchSingleTicket } from "@/lib/api";
+import { fetchSingleTicket, postPembayaran, uploadSingleFile } from "@/lib/api";
 
 const formSchema = z.object({
   paymentMethod: z.string().nonempty("Payment method is required"),
@@ -38,10 +38,12 @@ const Pembayaran = () => {
   });
 
   const [data, setData] = useState<any | null>(null);
+  const [token, setToken] = useState<string | null>(null);
 
   useEffect(() => {
     const userData = localStorage.getItem("user");
     if (userData) {
+      setToken(JSON.parse(userData).token);
       const token = JSON.parse(userData).token;
       fetchSingleTicket(token, id)
         .then((response) => {
@@ -67,28 +69,28 @@ const Pembayaran = () => {
       const fileData = new FormData();
       fileData.append("file", formData.file);
 
-      const uploadResponse = await axios.post("/api/upload", fileData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      if (token) {
+        uploadSingleFile(fileData, token).then(async (response) => {
+          const path = response.data.path;
+          const paymentResponse = await postPembayaran(
+            id,
+            formData.paymentMethod,
+            token,
+            path,
+          );
 
-      const fileUrl = uploadResponse.data.path;
+          if (paymentResponse.status === 200) {
+            alert("Payment successful");
+            router.push("/");
+          } else {
+            alert("Payment failed");
+          }
+        });
+      } else {
+        throw new Error("Token is null");
+      }
 
       // Submit payment details
-      const paymentResponse = await axios.post("/api/pembayaran/create", {
-        eventId: id,
-        ticketId: data.ticketId,
-        paymentMethod: formData.paymentMethod,
-        fileUrl,
-      });
-
-      if (paymentResponse.status === 200) {
-        alert("Payment successful");
-        router.push("/");
-      } else {
-        alert("Payment failed");
-      }
     } catch (error) {
       console.error("Error submitting payment:", error);
       alert("An error occurred while submitting the payment");
@@ -98,10 +100,15 @@ const Pembayaran = () => {
   return (
     <div className="flex h-screen items-center justify-center">
       <div className="w-96 border border-black bg-white p-10 text-black">
+        <h1 className="mb-4 text-2xl font-bold">
+          Pembayaran Untuk {data.event.name}
+        </h1>
+        <p>Jumlah Tiket: {data.quantity}</p>
+        <p>Total Harga: Rp {data.total_price.toLocaleString("id-ID")}</p>
         <FormProvider {...form}>
           <form
             onSubmit={form.handleSubmit(handleSubmit)}
-            className="space-y-8"
+            className="space-y-2"
           >
             <FormField
               control={form.control}

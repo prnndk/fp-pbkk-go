@@ -30,7 +30,7 @@ export default function BasicCard({
   };
 
   return (
-    <Card variant="outlined">
+    <Card variant="outlined" className="min-h-full">
       <CardContent>
         <Typography variant="h5" component="div">
           {word}

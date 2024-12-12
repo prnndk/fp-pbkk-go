@@ -191,3 +191,43 @@ export const fetchSingleTicket = async (token: string, id: string) => {
     throw new Error("Failed to fetch event data");
   }
 };
+
+export const uploadSingleFile = async (form: FormData, token: string) => {
+  try {
+    const uploadResponse = await api.post("/storage/upload", form, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return uploadResponse.data;
+  } catch {}
+};
+
+export const postPembayaran = async (
+  ticket_id: string,
+  paymentMethod: string,
+  token: string,
+  path: string,
+) => {
+  try {
+    const paymentResponse = await api.post(
+      "/pembayaran/create",
+      {
+        ticket_id: ticket_id,
+        metode_pembayaran: paymentMethod,
+        bukti_bayar: path,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    return paymentResponse;
+  } catch (error) {
+    console.error("Error posting payment:", error);
+    throw new Error("Failed to post payment");
+  }
+};
