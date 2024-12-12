@@ -42,7 +42,7 @@ const Tickets = () => {
       try {
         await deleteUserTicket(token, id);
         //reload windows using window
-        window.location.reload();
+        router.push("/tickets");
       } catch (error) {
         console.error("Error deleting ticket:", error);
         setError("Failed to delete ticket");

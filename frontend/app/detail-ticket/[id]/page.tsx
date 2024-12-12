@@ -6,6 +6,8 @@ import NotFound from "@/components/NotFound";
 
 import { fetchSingleTicket, deleteUserTicket } from "@/lib/api"; // Updated import
 import { Typography } from "@mui/material";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 const Tickets = () => {
   const router = useRouter();
@@ -63,6 +65,15 @@ const Tickets = () => {
                 Total Harga: Rp {data.total_price.toLocaleString("id-ID")}
               </Typography>
             </div>
+            {!data.is_paid && (
+              <div className="flex justify-end gap-4">
+                <Link href={`/pembayaran/${data.id}`}>
+                  <Button className="rounded-md bg-sky-500 px-4 py-2 text-white hover:bg-sky-800">
+                    Pembayaran
+                  </Button>
+                </Link>
+              </div>
+            )}
           </div>
         </div>
       </div>
