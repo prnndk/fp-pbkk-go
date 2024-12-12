@@ -4,6 +4,8 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { fetchUser, deleteUser, fetchUserEventData, deleteUserTicket } from "../../lib/api"; // Adjust the path to your api.ts file
 import { UserTicket } from "@/lib/definition";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 const UserDashboard = () => {
   const router = useRouter();
@@ -109,40 +111,34 @@ const UserDashboard = () => {
           color: "black",
         }}
       >
-        <h1 style={{ textAlign: "center" }}>User Dashboard</h1>
-        <br />
-        <br />
-        <div>
-          <p>
-            <strong>Name:</strong> {user?.name}
+        <h1 className="mb-6 text-center text-2xl font-bold">User Dashboard</h1>
+        <div className="space-y-4">
+          <div className="flex flex-col gap-2"></div>
+          <p className="text-gray-800">
+            <span className="font-semibold">Name:</span> {user?.name}
           </p>
-          <p>
-            <strong>Email:</strong> {user?.email}
+          <p className="text-gray-800">
+            <span className="font-semibold">Email:</span> {user?.email}
           </p>
         </div>
-        <br />
-        <div>
-          <h2>Event Tickets</h2>
-          <ul>
-            {tickets?.map((ticket) => (
-              <li
-                key={ticket.id}
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
-              >
-                {ticket.event.name} - {new Date(ticket.event.date).toLocaleDateString()}
-                <button
-                  onClick={() => deleteTicket(ticket.id)}
-                  style={{ color: "red" }}
-                >
-                  Delete
-                </button>
-              </li>
-            ))}
-          </ul>
+
+        <div className="mt-4 flex flex-row gap-4">
+          <Button
+            onClick={handleReturn}
+            className="bg-blue-500 text-white transition-colors hover:bg-blue-600"
+          >
+            Back to Home
+          </Button>
+          <Link href="/tickets">
+            <Button>Lihat daftar tiket</Button>
+          </Link>
+          <Button
+            variant="destructive"
+            className="bg-red-600 transition-colors hover:bg-red-700"
+            onClick={handleDelete}
+          >
+            Delete this User
+          </Button>
         </div>
         <br />
         <button onClick={handleReturn} style={{ color: "blue" }}>

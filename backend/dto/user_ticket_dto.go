@@ -42,6 +42,7 @@ type (
 		User       UserResponse             `json:"user"`
 		Quantity   int                      `json:"quantity"`
 		TotalPrice int                      `json:"total_price"`
+		IsPaid     bool                     `json:"is_paid"`
 	}
 
 	UserTicketPaginationResponse struct {
@@ -69,5 +70,14 @@ type (
 
 	DeleteUserTicketRequest struct {
 		ID string `json:"id" form:"id" binding:"required"`
+	}
+
+	UserTicketWithPayment struct {
+		ID         string `json:"id"`
+		EventID    string `json:"event_id"`
+		UserID     string `json:"user_id"`
+		Quantity   int    `json:"quantity"`
+		TotalPrice int    `json:"total_price"`
+		IsPaid     bool   `json:"is_paid"`
 	}
 )

@@ -38,7 +38,7 @@ func main() {
 
 		// Service
 		userService       service.UserService       = service.NewUserService(userRepository, jwtService)
-		userTicketService service.UserTicketService = service.NewUserTicketService(userTicketRepository, eventRepository)
+		userTicketService service.UserTicketService = service.NewUserTicketService(userTicketRepository, eventRepository, pembayaranRepository)
 		pembayaranService service.PembayaranService = service.NewPembayaranService(pembayaranRepository, userTicketRepository)
 		eventService      service.EventService      = service.NewEventService(eventRepository)
 		storageService    service.StorageService    = service.NewStorageService()

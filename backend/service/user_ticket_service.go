@@ -20,13 +20,15 @@ type (
 	userTicketService struct {
 		userTicketRepo repository.EventTicketRepository
 		eventRepo      repository.EventRepository
+		paymentRepo    repository.PembayaranRepository
 	}
 )
 
-func NewUserTicketService(userTicketRepo repository.EventTicketRepository, eventRepo repository.EventRepository) UserTicketService {
+func NewUserTicketService(userTicketRepo repository.EventTicketRepository, eventRepo repository.EventRepository, paymentRepo repository.PembayaranRepository) UserTicketService {
 	return &userTicketService{
 		userTicketRepo: userTicketRepo,
 		eventRepo:      eventRepo,
+		paymentRepo:    paymentRepo,
 	}
 }
 
@@ -99,6 +101,7 @@ func (s *userTicketService) GetUserTicket(ctx context.Context, user_id string) (
 
 	var userTicketResponse []dto.UserTicketResponse
 	for _, userTicket := range userTickets {
+		_, check, _ := s.paymentRepo.CheckPembayaranByTicketId(ctx, nil, userTicket.ID.String())
 		dataUser := dto.UserResponse{
 			ID:          userTicket.User.ID.String(),
 			Name:        userTicket.User.Name,
@@ -122,6 +125,7 @@ func (s *userTicketService) GetUserTicket(ctx context.Context, user_id string) (
 			Event:      dataEvent,
 			Quantity:   userTicket.Quantity,
 			TotalPrice: userTicket.TotalPrice,
+			IsPaid:     check,
 		})
 	}
 
@@ -133,6 +137,8 @@ func (s *userTicketService) GetUserTicketById(ctx context.Context, user_ticket_i
 	if err != nil {
 		return dto.UserTicketResponse{}, dto.ErrIdTicketNotFound
 	}
+
+	_, check, _ := s.paymentRepo.CheckPembayaranByTicketId(ctx, nil, userTicket.ID.String())
 
 	dataUser := dto.UserResponse{
 		ID:          userTicket.User.ID.String(),
@@ -157,6 +163,7 @@ func (s *userTicketService) GetUserTicketById(ctx context.Context, user_ticket_i
 		Event:      dataEvent,
 		Quantity:   userTicket.Quantity,
 		TotalPrice: userTicket.TotalPrice,
+		IsPaid:     check,
 	}, nil
 }
 
