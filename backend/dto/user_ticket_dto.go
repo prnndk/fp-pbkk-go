@@ -24,6 +24,7 @@ var (
 	ErrQuotaNotEnough          = errors.New("quota not enough")
 	ErrUpdateQuota             = errors.New("failed to update quota")
 	ErrDbTransactionInTicket   = errors.New("error in transaction")
+	ErrDeleteUserTicket        = errors.New("failed to delete user ticket")
 )
 
 type (
@@ -64,5 +65,9 @@ type (
 		Name        string `json:"name"`
 		PhoneNumber string `json:"phone_number"`
 		Email       string `json:"email"`
+	}
+
+	DeleteUserTicketRequest struct {
+		ID string `json:"id" form:"id" binding:"required"`
 	}
 )

@@ -14,6 +14,7 @@ type (
 		UserBuyTicket(ctx context.Context, req dto.UserTicketCreateRequest, userId string) (dto.UserTicketResponse, error)
 		GetUserTicket(ctx context.Context, user_id string) ([]dto.UserTicketResponse, error)
 		GetUserTicketById(ctx context.Context, user_ticket_id string) (dto.UserTicketResponse, error)
+		DeleteUserTicket(ctx context.Context, user_ticket_id string) error
 	}
 
 	userTicketService struct {
@@ -157,4 +158,33 @@ func (s *userTicketService) GetUserTicketById(ctx context.Context, user_ticket_i
 		Quantity:   userTicket.Quantity,
 		TotalPrice: userTicket.TotalPrice,
 	}, nil
+}
+
+func (s *userTicketService) DeleteUserTicket(ctx context.Context, user_ticket_id string) error {
+	tx := s.eventRepo.BeginTransaction()
+	defer tx.Rollback()
+
+	userTicket, err := s.userTicketRepo.GetTicketById(ctx, tx, user_ticket_id)
+	if err != nil {
+		return dto.ErrIdTicketNotFound
+	}
+
+	err = s.userTicketRepo.DeleteUserTicket(ctx, tx, user_ticket_id)
+	if err != nil {
+		return dto.ErrDeleteUserTicket
+	}
+
+	event, _, _ := s.eventRepo.CheckIfEventExist(ctx, tx, userTicket.EventId)
+	event.Quota += userTicket.Quantity
+
+	_, err = s.eventRepo.UpdateQuota(ctx, tx, event)
+	if err != nil {
+		return dto.ErrUpdateQuota
+	}
+
+	if err = tx.Commit().Error; err != nil {
+		return dto.ErrDbTransactionInTicket
+	}
+
+	return nil
 }

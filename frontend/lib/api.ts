@@ -231,3 +231,19 @@ export const postPembayaran = async (
     throw new Error("Failed to post payment");
   }
 };
+
+export const deleteUserTicket = async (token: string, ticketId: string): Promise<void> => {
+  try {
+    const response = await api.delete(`/ticket/${ticketId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (response.status !== 200) {
+      throw new Error("Failed to delete user ticket");
+    }
+  } catch (error) {
+    console.error("Error deleting user ticket:", error);
+    throw new Error("Failed to delete user ticket");
+  }
+};

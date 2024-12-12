@@ -14,6 +14,7 @@ type (
 		BuyTicket(ctx *gin.Context)
 		GetUserTicket(ctx *gin.Context)
 		GetUserTicketById(ctx *gin.Context)
+		DeleteUserTicket(ctx *gin.Context)
 	}
 
 	userTicketController struct {
@@ -81,5 +82,19 @@ func (c *userTicketController) GetUserTicketById(ctx *gin.Context) {
 	}
 
 	res := utils.BuildResponseSuccess(dto.MESSAGE_SUCCESS_GET_USER_TICKET, result)
+	ctx.JSON(http.StatusOK, res)
+}
+
+func (c *userTicketController) DeleteUserTicket(ctx *gin.Context) {
+	ticketId := ctx.Param("id")
+
+	err := c.userTicketService.DeleteUserTicket(ctx.Request.Context(), ticketId)
+	if err != nil {
+		res := utils.BuildResponseFailed(dto.MESSAGE_FAILED_GET_USER_TICKET, err.Error(), nil)
+		ctx.JSON(http.StatusBadRequest, res)
+		return
+	}
+
+	res := utils.BuildResponseSuccess(dto.MESSAGE_SUCCESS_GET_USER_TICKET, nil)
 	ctx.JSON(http.StatusOK, res)
 }

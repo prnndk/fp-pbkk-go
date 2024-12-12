@@ -13,5 +13,6 @@ func UserTicket(route *gin.Engine, userTicketController controller.UserTicketCon
 		routes.POST("", middleware.Authenticate(jwtService), userTicketController.BuyTicket)
 		routes.GET("/me", middleware.Authenticate(jwtService), userTicketController.GetUserTicket)
 		routes.GET("/:id", middleware.Authenticate(jwtService), userTicketController.GetUserTicketById)
+		routes.DELETE("/:id", middleware.Authenticate(jwtService), userTicketController.DeleteUserTicket)
 	}
 }

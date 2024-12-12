@@ -14,6 +14,7 @@ type (
 		CheckUserTicket(ctx context.Context, tx *gorm.DB, userId string, eventId string) (entity.UserTicket, bool, error)
 		CheckUserTicketById(ctx context.Context, tx *gorm.DB, userTicketId string) (entity.UserTicket, bool, error)
 		GetTicketById(ctx context.Context, tx *gorm.DB, userTicketId string) (entity.UserTicket, error)
+		DeleteUserTicket(ctx context.Context, tx *gorm.DB, user_ticket_id string) error
 	}
 	eventTicketRepository struct {
 		db *gorm.DB
@@ -88,4 +89,11 @@ func (r *eventTicketRepository) GetTicketById(ctx context.Context, tx *gorm.DB, 
 	}
 
 	return userTicket, nil
+}
+
+func (r *eventTicketRepository) DeleteUserTicket(ctx context.Context, tx *gorm.DB, user_ticket_id string) error {
+	if tx == nil {
+		tx = r.db
+	}
+	return tx.WithContext(ctx).Where("id = ?", user_ticket_id).Delete(&entity.UserTicket{}).Error
 }

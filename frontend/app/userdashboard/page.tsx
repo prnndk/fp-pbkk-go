@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { fetchUser, deleteUser, fetchUserEventData } from "../../lib/api"; // Adjust the path to your api.ts file
+import { fetchUser, deleteUser, fetchUserEventData, deleteUserTicket } from "../../lib/api"; // Adjust the path to your api.ts file
 import { UserTicket } from "@/lib/definition";
 
 const UserDashboard = () => {
@@ -68,8 +68,18 @@ const UserDashboard = () => {
     setIsModalOpen(false);
   };
 
-  const deleteTicket = (id: string) => {
-    setTickets(tickets.filter((ticket) => ticket.id !== id));
+  const deleteTicket = async (id: string) => {
+    const userData = localStorage.getItem("user");
+    if (userData) {
+      const token = JSON.parse(userData).token;
+      try {
+        await deleteUserTicket(token, id);
+        setTickets(tickets.filter((ticket) => ticket.id !== id));
+      } catch (error) {
+        console.error("Error deleting ticket:", error);
+        setError("Failed to delete ticket");
+      }
+    }
   };
 
   // Display loading or error message if needed
@@ -138,10 +148,9 @@ const UserDashboard = () => {
         <button onClick={handleReturn} style={{ color: "blue" }}>
           Back to Home
         </button>
-        <br />
-        <button onClick={handleDelete} style={{ color: "red" }}>
+        {/* <button onClick={handleDelete} style={{ color: "red" }}>
           Delete User
-        </button>
+        </button> */}
       </div>
       {isModalOpen && (
         <div
