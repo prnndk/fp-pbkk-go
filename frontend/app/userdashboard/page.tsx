@@ -84,7 +84,6 @@ const UserDashboard = () => {
     }
   };
 
-  // Display loading or error message if needed
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -141,9 +140,6 @@ const UserDashboard = () => {
           </Button>
         </div>
         <br />
-        <button onClick={handleReturn} style={{ color: "blue" }}>
-          Back to Home
-        </button>
         {/* <button onClick={handleDelete} style={{ color: "red" }}>
           Delete User
         </button> */}

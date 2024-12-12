@@ -11,7 +11,3 @@ type UserTicket struct {
 	Quantity   int       `json:"quantity"`
 	TotalPrice int       `json:"total_price" db:"total_price"`
 }
-
-type DeleteUserTicket struct {
-	ID uuid.UUID `json:"id"`
-}
